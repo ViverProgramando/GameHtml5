@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html>
+<head><title>Game</title>
+<style>
+body{background-color:gray;}
+canvas{background-color:#101010;}
+</style>
+</head>
+<body>
+
+<canvas id="tela" height="400" width="600" ></canvas>
+
+<script>
+
+
+
+var tela = document.getElementById('tela');
+var pincel = tela.getContext('2d');
+
+var loop = window.setInterval('Gloop()',30);
+var tank = new Image();
+tank.src = "tank.png";
+tank.height = 45;
+tank.width = 45;
+tank.X=tela.width/2-tank.width/2;
+tank.Y=0;
+var speed = 2.8;
+
+var deserto = new Image();
+deserto.src="areia.jpg";
+deserto.X=0;
+deserto.Y=0;
+deserto.height = tela.height*2;
+deserto.width = tela.width;
+var tempo_disparo=0; 
+var fogo = false;
+
+function Arma(x,y) {
+var bullet;
+this.bullet = new Image();
+this.bullet.src = "bullet.png";
+this.bullet.X=x;
+this.bullet.Y=y;
+this.bullet.H =10;
+this.bullet.W = 10;
+
+}
+
+var arma = new Array(20);
+var iArma =-1;
+
+
+
+
+function pressionaTecla(e)
+            {
+                if(e.keyCode == 65)
+                {
+				//  context.translate(-1,1);
+                 //  desenharImagem();  				
+                   tank.X = tank.X - speed; //move para esquerda				   
+                }
+		        else if(e.keyCode == 68)
+                {
+				 //   desenharImagem();
+                   tank.X = tank.X + speed; //move para direita					
+                }
+				else if(e.keyCode == 87){
+				//    desenharImagem();
+				   tank.Y = tank.Y - speed; veloc;					
+				}
+				else if(e.keyCode == 83){
+				//   desenharImagem();
+				  tank.Y = tank.Y + speed;
+				}
+				else if(e.keyCode == 13){
+                                  iArma++;
+                                  
+                                  arma[iArma] = new Arma(tank.X+tank.height/2,tank.Y+tank.width/2);
+				  fogo =true;
+				}
+            }
+function Gloop(){
+ window.addEventListener('keydown', pressionaTecla, true);
+Atualizar();
+Desenhar();
+
+}
+
+function fire(f){
+      if(f)
+        { 
+           for(var i=0;i<=arma.length;i++){ 
+             if(arma[i]!= null)
+               {  
+             //   pincel.clearRect(arma[i].bullet.X,arma[i].bullet.Y,10,10);
+                pincel.drawImage(arma[i].bullet,arma[i].bullet.X,arma[i].bullet.Y,arma[i].bullet.H,arma[i].bullet.W);
+               }
+             else
+               {
+             break;
+               } 
+ 
+            }  
+        }
+}
+
+
+function Atualizar(){
+    if(fogo)
+      {
+        for(var i=0;i<arma.length;i++){
+           if(arma[i]!= null)
+            {
+              arma[i].bullet.Y+=2;
+            }
+           else 
+            {
+              break;
+            }
+        }
+     }
+}
+
+function Desenhar(){
+  limparTela();
+  background();
+  tanque(tank.X,tank.Y);
+  fire(fogo);
+}
+
+function limparTela(){
+ pincel.clearRect(0,0,600,400);
+
+}
+
+function tanque(posX,posY){
+   // pincel.clearRect(posX,posY,45,45);
+    pincel.drawImage(tank,posX,posY,tank.height,tank.width);
+    colideTela(tela,tank,tank.X,tank.Y);
+}
+
+ function colideTela(parede,objeto,x,y){
+
+   if(x > parede.width - objeto.width )
+      {
+          objeto.X = parede.width - objeto.width;		  
+      }
+       else if(y > parede.height - objeto.height )
+      {
+	objeto.Y  = parede.height -objeto.height;			 
+      }
+       else if( x < 0 ){
+	 objeto.X =0;
+	 }
+	   else if( y < 0)
+         {
+	   objeto.Y = 0;
+	 }
+}	
+function background(){
+pincel.clearRect(0,0,600,400);
+pincel.drawImage(deserto,deserto.X,deserto.Y,deserto.width,deserto.height);
+deserto.Y-=1;
+if(deserto.Y == -deserto.height/2){
+deserto.Y=0;
+}
+}			
+
+</script>
+</body>
+</html>
