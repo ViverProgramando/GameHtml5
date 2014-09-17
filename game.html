@@ -12,18 +12,13 @@ canvas{background-color:#101010;}
 
 <script>
 
-
-
+var enemy;
+var play = false;
 var tela = document.getElementById('tela');
 var pincel = tela.getContext('2d');
 
 var loop = window.setInterval('Gloop()',30);
-var tank = new Image();
-tank.src = "tank.png";
-tank.height = 45;
-tank.width = 45;
-tank.X=tela.width/2-tank.width/2;
-tank.Y=0;
+
 var speed = 2.8;
 
 var deserto = new Image();
@@ -35,20 +30,28 @@ deserto.width = tela.width;
 var tempo_disparo=0; 
 var fogo = false;
 
-function Arma(x,y) {
-var bullet;
-this.bullet = new Image();
-this.bullet.src = "bullet.png";
-this.bullet.X=x;
-this.bullet.Y=y;
-this.bullet.H =10;
-this.bullet.W = 10;
 
+
+function Objeto( textura2D,coordX,coordY,largura,altura ){
+  var obj ;
+    this.obj = new Image();
+    this.obj.src = textura2D;
+    this.obj.X = coordX;
+    this.obj.Y = coordY;
+    this.obj.W = largura;
+    this.obj.H = altura;
+	
+return this.obj;
 }
+
+
+
 
 var arma = new Array(20);
 var iArma =-1;
-
+var tank;
+enemy = new Objeto("enemyblue.png",10,450,45,50);
+tank  = new Objeto("tank.png",tela.width/2,0,45,45);
 
 
 
@@ -76,12 +79,12 @@ function pressionaTecla(e)
 				else if(e.keyCode == 13){
                                   iArma++;
                                   
-                                  arma[iArma] = new Arma(tank.X+tank.height/2,tank.Y+tank.width/2);
+                                  arma[iArma] = new Objeto("bullet2.png",tank.X+tank.H/2,tank.Y+tank.H/2,10,10);
 				  fogo =true;
 				}
             }
 function Gloop(){
- window.addEventListener('keydown', pressionaTecla, true);
+
 Atualizar();
 Desenhar();
 
@@ -94,7 +97,7 @@ function fire(f){
              if(arma[i]!= null)
                {  
              //   pincel.clearRect(arma[i].bullet.X,arma[i].bullet.Y,10,10);
-                pincel.drawImage(arma[i].bullet,arma[i].bullet.X,arma[i].bullet.Y,arma[i].bullet.H,arma[i].bullet.W);
+                pincel.drawImage(arma[i],arma[i].X,arma[i].Y,arma[i].H,arma[i].W);
                }
              else
                {
@@ -106,13 +109,19 @@ function fire(f){
 }
 
 
+
 function Atualizar(){
+     window.addEventListener('keydown', pressionaTecla, true);
+	 colide2D(enemy,tank);
+	 enemy.Y-=2 ;
+	 enemy.X+=3;
+	 colideTela(tela,tank);
     if(fogo)
       {
         for(var i=0;i<arma.length;i++){
            if(arma[i]!= null)
             {
-              arma[i].bullet.Y+=2;
+              arma[i].Y+=2;
             }
            else 
             {
@@ -125,8 +134,12 @@ function Atualizar(){
 function Desenhar(){
   limparTela();
   background();
-  tanque(tank.X,tank.Y);
+  
+ // tanque();
+  draw(tank);
+  draw(enemy);
   fire(fogo);
+  
 }
 
 function limparTela(){
@@ -134,26 +147,30 @@ function limparTela(){
 
 }
 
-function tanque(posX,posY){
-   // pincel.clearRect(posX,posY,45,45);
-    pincel.drawImage(tank,posX,posY,tank.height,tank.width);
-    colideTela(tela,tank,tank.X,tank.Y);
+function draw(objeto){
+pincel.drawImage(objeto,objeto.X,objeto.Y,objeto.W,objeto.H);
 }
 
- function colideTela(parede,objeto,x,y){
+function tanque(){
+   // pincel.clearRect(posX,posY,45,45);
+    pincel.drawImage(tank,tank.X,tank.Y,tank.height,tank.width);
+    
+}
 
-   if(x > parede.width - objeto.width )
+ function colideTela(parede,objeto){
+
+   if(objeto.X > parede.width - objeto.W )
       {
-          objeto.X = parede.width - objeto.width;		  
+          objeto.X = parede.width - objeto.W;		  
       }
-       else if(y > parede.height - objeto.height )
+       else if(objeto.Y > parede.height - objeto.H )
       {
-	objeto.Y  = parede.height -objeto.height;			 
+	objeto.Y  = parede.height -objeto.H;			 
       }
-       else if( x < 0 ){
+       else if( objeto.X < 0 ){
 	 objeto.X =0;
 	 }
-	   else if( y < 0)
+	   else if( objeto.Y < 0)
          {
 	   objeto.Y = 0;
 	 }
@@ -167,6 +184,21 @@ deserto.Y=0;
 }
 }			
 
+function colide2D( object1, object2){
+
+  var r1 = object1.W/2;
+  var r2 = object2.W/2;
+  var pontoX1 = object1.X+r1;
+  var pontoY1 = object1.Y+r1; 
+  var pontoX2 = object2.X+r2;
+  var pontoY2 = object2.Y+r2;
+  var distancia = Math.sqrt( Math.pow( (pontoX1-pontoX2),2)+Math.pow( pontoY1-pontoY2,2));
+
+if ( distancia-(r1+r2)<0){
+alert("colidiu");
+}
+
+}
 </script>
 </body>
 </html>
